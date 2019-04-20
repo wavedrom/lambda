@@ -1,0 +1,25 @@
+{
+  "name": "wavedrom-lambda",
+  "version": "0.1.0",
+  "description": "lambda",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wavedrom/lambda.git"
+  },
+  "author": "Aliaksei Chapyzhenka",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wavedrom/lambda/issues"
+  },
+  "homepage": "https://github.com/wavedrom/lambda#readme",
+  "dependencies": {
+    "bit-field": "^1.0.3",
+    "json5": "^2.1.0",
+    "node-fetch": "^2.3.0",
+    "onml": "^1.0.0"
+  }
+}
