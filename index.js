@@ -34,35 +34,29 @@ const error = body => {
     }, body]]);
 };
 
-const getDescriptor = async q => {
-  if (q && q.github) {
-    const ps = q.github.split('/');
-    const user = ps[0];
-    const repo = ps[1];
-    const file = ps[2];
-    if (user, repo, file) {
-      const url = `https://raw.githubusercontent.com/${user}/${repo}/master/${file}`;
-      const response = await fetch(url);
-      const text = await response.text();
-      let data;
-      try {
-        data = JSON5.parse(text);
-      } catch(err) {
-        return error(JSON.stringify(err) || 'parse:error');
-      }
-      if (data && data.reg) {
-        const options = {hspace: ((width - 8) >> 5) << 5, lanes: 1};
-        return bitField.render(data.reg, options);
-      }
-      return error(JSON.stringify(data) || 'data:undefined');
+const getDescriptor = async event => {
+  const path = event.path;
+  const m = path.match(/^\/github\/(.+)/);
+  if (m) {
+    const url = `https://raw.githubusercontent.com/${m[1]}`;
+    const response = await fetch(url);
+    const text = await response.text();
+    let data;
+    try {
+      data = JSON5.parse(text);
+    } catch(err) {
+      return error(JSON.stringify(err) || 'parse:error');
     }
-    return error(JSON.stringify(ps) || 'ps:undefined');
+    if (data && data.reg) {
+      const options = {hspace: ((width - 8) >> 5) << 5, lanes: 1};
+      return bitField.render(data.reg, options);
+    }
   }
-  return error(JSON.stringify(q) || 'query:undefined');
+  return error(JSON.stringify('path:' + event.path));
 };
 
 exports.handler = async (event) => {
-  const res = await getDescriptor(event.queryStringParameters);
+  const res = await getDescriptor(event);
   console.log(res);
   const response = {
     headers: {'Content-Type': 'image/svg+xml'},
