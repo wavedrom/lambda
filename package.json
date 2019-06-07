@@ -18,9 +18,9 @@
   },
   "homepage": "https://github.com/wavedrom/lambda#readme",
   "dependencies": {
-    "bit-field": "^1.0.3",
     "json5": "^2.1.0",
     "node-fetch": "^2.3.0",
-    "onml": "^1.0.0"
+    "onml": "^1.0.0",
+    "wavedrom": "^2.1.2"
   }
 }

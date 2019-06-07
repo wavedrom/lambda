@@ -1,17 +1,10 @@
 'use strict';
 
-const onml = require('onml');
 const fetch = require('node-fetch');
 const JSON5 = require('json5');
-const bitField = require('bit-field');
+const wavedrom = require('wavedrom');
 
 const width = 866;
-
-const isa = (obj, opt) => {
-  const options = Object.assign({hspace: ((width - 8) >> 5) << 5, lanes: 1}, opt);
-  const ml = ['div', {style: 'background-color: white;'}, bitField.render(obj, options)];
-  return ml;
-};
 
 const getSVG = (w, h) => ['svg', {
   xmlns: 'http://www.w3.org/2000/svg',
@@ -30,29 +23,47 @@ const error = body => {
       width: w - 16, height: h - 16
     }]])
     .concat([['text', {
-      x: 16, y: 32,
+      x: 16, y: 32
     }, body]]);
 };
 
 const getDescriptor = async event => {
   const path = event.path;
   const m = path.match(/^\/github\/(.+)/);
+  let data;
   if (m) {
-    const url = `https://raw.githubusercontent.com/${m[1]}`;
-    const response = await fetch(url);
-    const text = await response.text();
-    let data;
+
     try {
-      data = JSON5.parse(text);
-    } catch(err) {
-      return error(JSON.stringify(err) || 'parse:error');
+      const url = `https://raw.githubusercontent.com/${m[1]}`;
+      const response = await fetch(url);
+      data = await response.text();
+    } catch (err) {
+      return error(JSON.stringify(err) || 'github:fetch:error');
     }
-    if (data && data.reg) {
-      const options = {hspace: ((width - 8) >> 5) << 5, lanes: 1};
-      return bitField.render(data.reg, options);
+
+    try {
+      data = JSON5.parse(data);
+    } catch (err) {
+      return error(JSON.stringify(err) || 'github:parse:error');
     }
+
+    if (typeof data === 'object') {
+      data.config = {hspace: width};
+      return wavedrom.renderAny(0, data, wavedrom.waveSkin);
+    }
+    return error('github:data:error:' + data);
   }
-  return error(JSON.stringify('path:' + event.path));
+
+  try {
+    data = decodeURIComponent(event.path);
+    data = data.split('/').join('');
+    data = JSON5.parse(data);
+  } catch (err) {
+    return error((JSON.stringify(err) || 'parse:error:') + data);
+  }
+
+  data.config = {hspace: width};
+  return wavedrom.renderAny(0, data, wavedrom.waveSkin);
 };
 
 exports.handler = async (event) => {
@@ -61,7 +72,7 @@ exports.handler = async (event) => {
   const response = {
     headers: {'Content-Type': 'image/svg+xml'},
     statusCode: 200,
-    body: onml.stringify(res)
+    body: wavedrom.onml.stringify(res)
   };
   return response;
 };
