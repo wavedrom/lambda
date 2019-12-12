@@ -4,7 +4,7 @@
   "description": "lambda",
   "main": "index.js",
   "scripts": {
-    "test": "eslint index.js",
+    "test": "eslint *.js",
     "github": "rm -rf github.zip package-lock.json node_modules && npm i && zip -r github.zip node_modules index.js"
   },
   "repository": {
