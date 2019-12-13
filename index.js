@@ -30,6 +30,8 @@ const error = body => {
 const getDescriptor = async event => {
   const path = event.path;
   const dataGithub = path.match(/^\/github\/(.+)/);
+  const dataGitlab = path.match(/^\/gitlab\/(.+)/);
+  const dataGist = path.match(/^\/gist\/(.+)/);
   const dataBase64 = path.match(/^\/base64\/(.+)/);
   let data;
 
@@ -41,6 +43,25 @@ const getDescriptor = async event => {
       data = await response.text();
     } catch (err) {
       return error(JSON.stringify(err) || 'github:fetch:error');
+    }
+  } else if (dataGitlab) {
+    // Fetch the Json from Gitlab
+    const urlGitlab = dataGitlab[1].replace(/\/blob\//gi, '/raw/');
+    try {
+      const url = `https://gitlab.com/${urlGitlab}`;
+      const response = await fetch(url);
+      data = await response.text();
+    } catch (err) {
+      return error(JSON.stringify(err) || 'gitlab:fetch:error');
+    }
+  } else if (dataGist) {
+    // Fetch the Json from Gist
+    try {
+      const url = `https://gist.githubusercontent.com/${dataGist[1]}`;
+      const response = await fetch(url);
+      data = await response.text();
+    } catch (err) {
+      return error(JSON.stringify(err) || 'gist:fetch:error');
     }
   } else if (dataBase64) {
     // Decode the Base64 in the link
