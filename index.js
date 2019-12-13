@@ -29,46 +29,54 @@ const error = body => {
 
 const getDescriptor = async event => {
   const path = event.path;
-  const m = path.match(/^\/github\/(.+)/);
+  const dataGithub = path.match(/^\/github\/(.+)/);
+  const dataBase64 = path.match(/^\/base64\/(.+)/);
   let data;
-  if (m) {
 
+  if (dataGithub) {
+    // Fetch the Json from Github
     try {
-      const url = `https://raw.githubusercontent.com/${m[1]}`;
+      const url = `https://raw.githubusercontent.com/${dataGithub[1]}`;
       const response = await fetch(url);
       data = await response.text();
     } catch (err) {
       return error(JSON.stringify(err) || 'github:fetch:error');
     }
-
+  } else if (dataBase64) {
+    // Decode the Base64 in the link
+    const base64Data = dataBase64[1];
     try {
-      data = JSON5.parse(data);
+      data = new Buffer(base64Data, 'base64').toString('ascii');
     } catch (err) {
-      return error(JSON.stringify(err) || 'github:parse:error');
+      return error((JSON.stringify(err) || 'base64:decode:error') + base64Data);
     }
-
-    if (typeof data === 'object') {
-      data.config = {hspace: width};
-      return wavedrom.renderAny(0, data, wavedrom.waveSkin);
+  } else {
+    // Json is in the link
+    try {
+      data = decodeURIComponent(event.path);
+      data = data.split('/').join('');
+    } catch (err) {
+      return error((JSON.stringify(err) || 'decodeURI:error:') + data);
     }
-    return error('github:data:error:' + data);
   }
 
   try {
-    data = decodeURIComponent(event.path);
-    data = data.split('/').join('');
     data = JSON5.parse(data);
   } catch (err) {
     return error((JSON.stringify(err) || 'parse:error:') + data);
   }
 
+  if (typeof data !== 'object') {
+    return error('data:error:' + data);
+  }
+
+  // Finally, render the Json5
   data.config = {hspace: width};
   return wavedrom.renderAny(0, data, wavedrom.waveSkin);
 };
 
 exports.handler = async (event) => {
   const res = await getDescriptor(event);
-  console.log(res);
   const response = {
     headers: {'Content-Type': 'image/svg+xml'},
     statusCode: 200,
