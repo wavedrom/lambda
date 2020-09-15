@@ -3,6 +3,12 @@
 const fetch = require('node-fetch');
 const JSON5 = require('json5');
 const wavedrom = require('wavedrom');
+const default = require('wavedrom/skins/default.js');
+const narrow = require('wavedrom/skins/narrow.js');
+const lowkey = require('wavedrom/skins/lowkey.js');
+const dark = require('wavedrom/skins/dark.js');
+
+const skins = Object.assign({}, default, narrow, lowkey, dark);
 
 const width = 866;
 
@@ -94,7 +100,7 @@ const getDescriptor = async event => {
   // Finally, render the Json5
   data.config = data.config || {};
   data.config.hspace = data.config.hspace || width;
-  return wavedrom.renderAny(0, data, wavedrom.waveSkin);
+  return wavedrom.renderAny(0, data, skins);
 };
 
 exports.handler = async (event) => {
