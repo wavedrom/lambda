@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "eslint *.js",
-    "github": "rm -rf github.zip package-lock.json node_modules && npm i --production && zip -r github.zip node_modules index.js"
+    "build": "rm -rf lambda.zip package-lock.json node_modules && npm i --production && zip -r lambda.zip node_modules index.js"
   },
   "repository": {
     "type": "git",
