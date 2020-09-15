@@ -92,7 +92,8 @@ const getDescriptor = async event => {
   }
 
   // Finally, render the Json5
-  data.config = {hspace: width};
+  data.config = data.config || {};
+  data.config.hspace = data.config.hspace || width;
   return wavedrom.renderAny(0, data, wavedrom.waveSkin);
 };
 

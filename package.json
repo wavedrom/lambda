@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "eslint *.js",
-    "github": "rm -rf github.zip package-lock.json node_modules && npm i && zip -r github.zip node_modules index.js"
+    "github": "rm -rf github.zip package-lock.json node_modules && npm i --production && zip -r github.zip node_modules index.js"
   },
   "repository": {
     "type": "git",
@@ -22,13 +22,13 @@
   },
   "devDependencies": {
     "@drom/eslint-config": "^0.10.0",
-    "eslint": "^5.16.0"
+    "eslint": "^7.9.0"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "json5": "^2.1.1",
-    "node-fetch": "^2.3.0",
-    "onml": "^1.1.0",
-    "wavedrom": "^2.3.0"
+    "json5": "^2.1.3",
+    "node-fetch": "^2.6.1",
+    "onml": "^1.2.0",
+    "wavedrom": "^2.6.8"
   }
 }
