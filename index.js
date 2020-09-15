@@ -3,12 +3,13 @@
 const fetch = require('node-fetch');
 const JSON5 = require('json5');
 const wavedrom = require('wavedrom');
-const default = require('wavedrom/skins/default.js');
+
+const def = require('wavedrom/skins/default.js');
 const narrow = require('wavedrom/skins/narrow.js');
 const lowkey = require('wavedrom/skins/lowkey.js');
 const dark = require('wavedrom/skins/dark.js');
 
-const skins = Object.assign({}, default, narrow, lowkey, dark);
+const skins = Object.assign({}, def, narrow, lowkey, dark);
 
 const width = 866;
 
